@@ -30,7 +30,7 @@ file and second is the name of test file. Both should be tagged using
 program q2.py. In case they are ommitted, by default this program
 considers 'out_1_b.txt' as train file and 'out_1_b_full.txt' as test
 file.
-First I remove "<s>" from file we care about only end of sentence in this
+First I remove opening tag '<s>' from file because we care about only end of sentence in this
 problem. Window size is hyperparameter. I tuned it using cross-validation.
 I create 24 dimensional multihot representation for each punctuation
 mark. This multi-hot representation depends on the characters present
