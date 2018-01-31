@@ -48,3 +48,5 @@ nearby helps in determining the label(0/1). After preparing training
 data, I learn a model using sklearn.neural_network(http://scikit-learn.org/stable/modules/neural_networks_supervised.html)
  and then predict the labels for test data. Finally I report accuracy of learnt labels.
  I also report indices where our learnt model mispredicted.
+I also tried Decision Tree based classifier from(http://scikit-learn.org/stable/modules/tree.html)
+ and SVM based classifier from(http://scikit-learn.org/stable/modules/svm.html)
