@@ -1,9 +1,10 @@
 import re
 import numpy as np
 import os
-import scipy as sp
 from sklearn.neural_network import MLPClassifier
 import sys
+from sklearn import tree
+from sklearn import svm
 
 ## Input
 
@@ -33,7 +34,7 @@ test = re.sub("<s>", "", test)
 # test = "the game is on.</s> I gave C. J. Mary money.</s> He said, 'I dunno anything man.'</s> Let him go.</s> Let her go.</s> The game is never over J. Watson.</s> 'Are there new players?', he asked.</s> He counter asked, 'Do u understand this?'</s> The reply was in negation.</s>"
 
 # Hyperparameters
-window=2 #2
+window=3 # minimum 3
 D=24
 mid=D/2
 
@@ -79,6 +80,9 @@ def prep_feature(t):
 		elif (i+1<n and t[i+1]=="'" and i+2<n and t[i+2] == '<'):
 			flag=1
 			sq=1
+		elif(i+1<n and t[i+1] == ' ' and i+2<n and t[i+2]=="'" and i+3<n and t[i+3] =='<'):
+			flag=1
+			sq=2
 		else:
 			flag=0
 			sq=0
@@ -100,9 +104,14 @@ def prep_feature(t):
 			j=j+1
 		
 		if(i+1<n):
-			if sq:
+			if(sq==1):
 				f[mid+dic[t[i+1]]]=1
 				j=2
+				i=i+4
+			elif(sq==2):
+				f[mid+dic[t[i+1]]]=1
+				f[mid+dic[t[i+2]]]=1
+				j=3
 				i=i+4
 			else:
 				i=i+4
@@ -135,7 +144,7 @@ def prep_feature(t):
 Xtrain, Ytrain = prep_feature(train)
 Xtest, Ytest = prep_feature(test)
 
-# Training the model
+# Training the model on NN
 clf = MLPClassifier(solver='lbfgs', alpha=1e-6,hidden_layer_sizes=(12,4), random_state=1)
 clf.fit(Xtrain, Ytrain)                                            #12, 4
 
@@ -144,13 +153,43 @@ Ypred = clf.predict(Xtest)
 Ypred[Ypred.shape[0]-1] = 1
 
 
+print(" **** Neural Network based classifier ****")
 print("Indices of difference between Ytest and Ypred:"),
 a=np.where(np.logical_not(np.equal(Ypred, Ytest)))
 print(a)
 
-print("Accuracy : "),
+print("Neural Network Accuracy : "),
 print((np.sum(Ypred == Ytest)*1.0)/Ytest.shape)
 
+print("-------------------------------------------------------")
+
+# Training the model on Decision Tree
+clf = tree.DecisionTreeClassifier()
+clf = clf.fit(Xtrain, Ytrain)
+Ypred = clf.predict(Xtest)
+Ypred[Ypred.shape[0]-1] = 1
 
 
+print("**** Decision Tree based Classifier ****")
+print("Indices of difference between Ytest and Ypred:"),
+a=np.where(np.logical_not(np.equal(Ypred, Ytest)))
+print(a)
 
+print("Decision Tree Accuracy : "),
+print((np.sum(Ypred == Ytest)*1.0)/Ytest.shape)
+
+print("-------------------------------------------------------")
+
+# Training on SVM
+clf = svm.SVC()
+clf.fit(Xtrain, Ytrain)
+Ypred = clf.predict(Xtest)
+Ypred[Ypred.shape[0]-1] = 1
+
+print("**** Support Vector Machine based Classifier ****")
+print("Indices of difference between Ytest and Ypred:"),
+a=np.where(np.logical_not(np.equal(Ypred, Ytest)))
+print(a)
+
+print("Support Vector Machine Accuracy : "),
+print((np.sum(Ypred == Ytest)*1.0)/Ytest.shape)

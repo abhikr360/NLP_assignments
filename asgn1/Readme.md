@@ -1,3 +1,10 @@
+### Dependencies ###
+re
+os
+sys
+numpy
+sklearn
+
 ### q1_a.py ###
 
 This code takes filename as command line argument. First I add a dummy new line at the beginning and end of file.

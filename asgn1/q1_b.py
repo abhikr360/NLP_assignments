@@ -22,6 +22,8 @@ s = abr.sub(r'\1@', s)
 ## End of sentence
 pat1 = re.compile("(!|\?|\.)('?)(\s*)('?[A-Z])")
 s = pat1.sub(r'\1\2</s>\3\4', s)
+pat2 = re.compile("(!|\?|\.)( )(')(\n)")
+s = pat2.sub(r'\1\2\3</s>\4', s)
 
 
 
@@ -34,8 +36,8 @@ s = re.sub("(A cloud)", r'<s>\1', s)
 s = re.sub("(THE suburb)", r'<s>\1', s)
 
 # Remove Chapter Headings as these can't be part of sentences
-pat2 = re.compile('^CHAPTER[ A-Z]*\n\n[A-Z ]*\n', re.M)# print(re.findall('^CHAPTER[ A-Z]*\n\n[A-Z ]*\n', s, re.M))
-s = pat2.sub(' ', s)
+pat3 = re.compile('^CHAPTER[ A-Z]*\n\n[A-Z ]*\n', re.M)# print(re.findall('^CHAPTER[ A-Z]*\n\n[A-Z ]*\n', s, re.M))
+s = pat3.sub(' ', s)
 
 # End Of File
 if(str(sys.argv[1])=='test.txt'):
@@ -46,8 +48,8 @@ else:
 	dummy=0
 
 ## Start of sentence
-pat2 = re.compile("(</s>)(\s*)('?)([A-Z])([^@])")
-s = pat2.sub(r'\1\2<s>\3\4\5', s)
+pat4 = re.compile("(</s>)(\s*)('?)([A-Z])([^@])")
+s = pat4.sub(r'\1\2<s>\3\4\5', s)
 
 # Bring back abbreviations
 s = re.sub('@','.',s)

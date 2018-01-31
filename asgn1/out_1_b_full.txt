@@ -759,9 +759,9 @@ are such an ass?'</s>
 in in my life, and I am going to act accordingly.</s> <s>Gregory, I gave
 you a promise before I came into this place.</s> <s>That promise I would
 keep under red-hot pincers.</s> <s>Would you give me, for my own safety, a
-little promise of the same kind? '
+little promise of the same kind? '</s>
 
-'A promise?' asked Gregory, wondering.</s>
+<s>'A promise?' asked Gregory, wondering.</s>
 
 <s>'Yes,' said Syme very seriously, 'a promise.</s> <s>I swore before God
 that I would not tell your secret to the police.</s> <s>Will you swear by
@@ -2459,9 +2459,9 @@ yellow moustache.</s> <s>'I stopped too long up in that room, so that even
 such leaden feet could catch me up.</s> <s>One comfort is, with a little
 brisk walking I can put a man like that as far away as Timbuctoo.</s>
 <s>Or am I too fanciful?</s> <s>Was he really following me?</s> <s>Surely Sunday
-would not be such a fool as to send a lame man? '
+would not be such a fool as to send a lame man? '</s>
 
-He set off at a smart pace, twisting and whirling his stick, in
+<s>He set off at a smart pace, twisting and whirling his stick, in
 the direction of Covent Garden.</s> <s>As he crossed the great market the
 snow increased, growing blinding and bewildering as the afternoon
 began to darken.</s> <s>The snow-flakes tormented him like a swarm of
@@ -3453,9 +3453,9 @@ my intuition is.</s> <s>It has that sudden quality we sometimes feel in
 the coming of spring.'</s>
 
 <s>He then studied the answer on his friend's fingers.</s> <s>The answer
-was, 'Go to hell! '
+was, 'Go to hell! '</s>
 
-The Professor then resumed his merely verbal monologue addressed
+<s>The Professor then resumed his merely verbal monologue addressed
 to the Doctor.</s>
 
 <s>'Perhaps I should rather say,' said Syme on his fingers, 'that it
@@ -4295,9 +4295,9 @@ powerful and fanatical church, a church of eastern pessimism, which
 holds it holy to destroy mankind like vermin.</s> <s>How hard they hunt us
 you can gather from the fact that we are driven to such disguises
 as those for which I apologise, and to such pranks as this one by
-which you suffer. '
+which you suffer. '</s>
 
-The younger second of the Marquis, a short man with a black
+<s>The younger second of the Marquis, a short man with a black
 moustache, bowed politely, and said--
 
 'Of course, I accept the apology; but you will in your turn forgive
@@ -4499,9 +4499,9 @@ Marquis's straw hat, the man whom he had come to address as
 Ratcliffe.</s> <s>In a voice exaggeratively loud and cheerful, he broke
 the bottomless silence and made conversation.</s>
 
-<s>'May I ask,' he said, 'where on earth we are all going to? '
+<s>'May I ask,' he said, 'where on earth we are all going to? '</s>
 
-So genuine had been the doubts of his soul, that he was quite glad
+<s>So genuine had been the doubts of his soul, that he was quite glad
 to hear his companion speak in an easy, human voice.</s>
 
 <s>'We must get down through the town of Lancy to the sea,' he said.</s>
@@ -5785,9 +5785,9 @@ man in plain clothes.</s>
 run away!'</s>
 
 <s>'He has run away with an old gentleman,' said the other stranger
-breathlessly, 'a poor old gentleman with white hair! '
+breathlessly, 'a poor old gentleman with white hair! '</s>
 
-'What sort of old gentleman?' asked Syme, with great curiosity.</s>
+<s>'What sort of old gentleman?' asked Syme, with great curiosity.</s>
 
 <s>'A very large and fat old gentleman in light grey clothes,' said
 the keeper eagerly.</s>
@@ -6652,9 +6652,9 @@ hair like your sister.'</s>
 <s>'My red hair, like red flames, shall burn up the world,' said
 Gregory.</s> <s>'I thought I hated everything more than common men can
 hate anything; but I find that I do not hate everything so much
-as I hate you! '
+as I hate you! '</s>
 
-'I never hated you,' said Syme very sadly.</s>
+<s>'I never hated you,' said Syme very sadly.</s>
 
 <s>Then out of this unintelligible creature the last thunders broke.</s>
 

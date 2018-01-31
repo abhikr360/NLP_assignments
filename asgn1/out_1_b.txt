@@ -759,9 +759,9 @@ are such an ass?'</s>
 in in my life, and I am going to act accordingly.</s> <s>Gregory, I gave
 you a promise before I came into this place.</s> <s>That promise I would
 keep under red-hot pincers.</s> <s>Would you give me, for my own safety, a
-little promise of the same kind? '
+little promise of the same kind? '</s>
 
-'A promise?' asked Gregory, wondering.</s>
+<s>'A promise?' asked Gregory, wondering.</s>
 
 <s>'Yes,' said Syme very seriously, 'a promise.</s> <s>I swore before God
 that I would not tell your secret to the police.</s> <s>Will you swear by
