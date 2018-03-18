@@ -17,7 +17,9 @@ from keras.models import Sequential
 from keras.layers import Dense, Embedding
 from keras.layers import LSTM
 from gensim.models import doc2vec
-
+from gensim.models.doc2vec import Doc2Vec
+import glob
+import random
 #### LOAD DATA #####
 
 traindatafile = "../asgn2data/aclImdb/train/labeledBow_shuffled.feat"
@@ -251,8 +253,84 @@ def getGloveWeightedAvg():
 
 
 
+def getDoc2Vec(algo=5):
+	model= Doc2Vec.load('my_model.doc2vec')
+	postrfiles = glob.glob("../asgn2data/aclImdb/train/pos/*.txt")
+	negtrfiles = glob.glob("../asgn2data/aclImdb/train/neg/*.txt")
+	postsfiles = glob.glob("../asgn2data/aclImdb/test/pos/*.txt")
+	negtsfiles = glob.glob("../asgn2data/aclImdb/test/neg/*.txt")
+
+	x = np.zeros((25000,300))
+	xt = np.zeros((25000,300))
+	y = np.zeros(25000)
+	yt = np.zeros(25000)
+
+	i=0
+	for f in postrfiles:
+		x[i]=model[f]
+		y[i]=1
+		i+=1
+	i=0
+	for f in negtrfiles:
+		x[i]=model[f]
+		y[i]=0
+		i+=1
+	i=0
+	for f in postsfiles:
+		xt[i]=model[f]
+		yt[i]=1
+		i+=1
+	i=0
+	for f in negtsfiles:
+		xt[i]=model[f]
+		yt[i]=0
+		i+=1
 
 
+	combined = list(zip(x,y))
+	random.shuffle(combined)
+	x[:], y[:] = zip(*combined)
+
+
+	if(algo==3):
+		clf = LogisticRegression()
+		y = (Ytr>5)
+		yt = (Yts>5)
+		clf.fit(x, y)
+		yp = clf.predict(xt)
+		print((sum(yp==yt)*1.0)/len(yp))
+	elif(algo==4):
+		clf = svm.SVC()
+		y = 2*(Ytr>5)-1
+		yt = 2*(Yts>5)-1
+		clf.fit(x, y)
+		yp = clf.predict(xt)
+		print((sum(yp==yt)*1.0)/len(yp))
+	elif(algo==5):
+		clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(10,10), random_state=1)
+		y = 2*(Ytr>5)-1
+		yt = 2*(Yts>5)-1
+		clf.fit(x, y)
+		yp = clf.predict(xt)
+		print((sum(yp==yt)*1.0)/len(yp))
+	elif(algo==6):
+		y = (Ytr>5)
+		yt = (Yts>5)
+
+		x = x.reshape(x.shape[0],1,x.shape[1])
+		xt = xt.reshape(xt.shape[0],1,xt.shape[1])
+		# print(x.shape[0], x.shape[1])
+		model = Sequential()
+		model.add(LSTM(3, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
+		model.add(Dense(1, activation='sigmoid'))
+		model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+		print('Train...')
+		batch_size = 100
+		model.fit(x, y, batch_size=batch_size, epochs=1, validation_data=(xt, yt))
+		score, acc = model.evaluate(xt, yt, batch_size=batch_size)
+		print('Test accuracy:', acc)
+	else:
+		"Print algo not applicable"
 
 
 
@@ -332,14 +410,15 @@ def rnnLSTM(x, xt):
 def main():
 
 
-	x, xt=getGloveWeightedAvg()
-	rnnLSTM(x, xt)
-	x, xt = getGloveAvg()
-	rnnLSTM(x,xt)
-	x, xt = getWord2VecAvg()
-	rnnLSTM(x,xt)
-	x, xt = getWord2VecweightedAvg()
-	rnnLSTM(x,xt)
+	# x, xt=getGloveWeightedAvg()
+	# rnnLSTM(x, xt)
+	# x, xt = getGloveAvg()
+	# rnnLSTM(x,xt)
+	# x, xt = getWord2VecAvg()
+	# rnnLSTM(x,xt)
+	# x, xt = getWord2VecweightedAvg()
+	# rnnLSTM(x,xt)
+	getDoc2Vec(3)
 
 
 if __name__ == '__main__':
