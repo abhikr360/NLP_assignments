@@ -16,10 +16,11 @@ from keras.preprocessing import sequence
 from keras.models import Sequential
 from keras.layers import Dense, Embedding
 from keras.layers import LSTM
+from gensim.models import doc2vec
 
 #### LOAD DATA #####
 
-traindatafile = "../asgn2data/aclImdb/train/labeledBow.feat"
+traindatafile = "../asgn2data/aclImdb/train/labeledBow_shuffled.feat"
 tr_data = load_svmlight_file(traindatafile)
 Xtr = tr_data[0];
 Ytr = tr_data[1];
@@ -67,25 +68,25 @@ def getTFIDF():
 
 # Word2Vec Avg 
 def getWord2VecAvg():
-	# vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
-	# Word2Vec_word_vectors = KeyedVectors.load_word2vec_format('../asgn2data/word2vec.bin', binary=True)
-	# ret1=np.zeros((25000, 300))
+	vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
+	Word2Vec_word_vectors = KeyedVectors.load_word2vec_format('../asgn2data/word2vec.bin', binary=True)
+	ret1=np.zeros((25000, 300))
 	# ret2=np.zeros((25000, 300))
 	
-	# for i in range(Xtr.shape[0]):
-	# 	k=0
-	# 	temp = Xtr.getrow(i)
-	# 	temp = temp.toarray()
-	# 	for j in range(Xtr.shape[1]):
-	# 		if(temp[0][j]):
-	# 			if(vocab[j] in Word2Vec_word_vectors.vocab):
-	# 				ret1[i] += Word2Vec_word_vectors[vocab[j]]
-	# 				k+=1
-	# 	ret1[i] = ret1[i]/k
-	# 	print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
+	for i in range(Xtr.shape[0]):
+		k=0
+		temp = Xtr.getrow(i)
+		temp = temp.toarray()
+		for j in range(Xtr.shape[1]):
+			if(temp[0][j]):
+				if(vocab[j] in Word2Vec_word_vectors.vocab):
+					ret1[i] += Word2Vec_word_vectors[vocab[j]]
+					k+=1
+		ret1[i] = ret1[i]/k
+		print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
 
-	# print("")
-	# print('Train features prepared')
+	print("")
+	print('Train features prepared')
 	# for i in range(Xts.shape[0]):
 	# 	k=0
 	# 	temp = Xts.getrow(i)
@@ -97,41 +98,41 @@ def getWord2VecAvg():
 	# 				k+=1
 	# 	ret2[i] = ret2[i]/k
 	# 	print "  Iteration %d out of %d\r" % (i,Xts.shape[0]) ,
-	# print("")
+	print("")
 
-	# np.save('train_simple_word2vec.npy', ret1)
+	np.save('train_simple_word2vec_shuffled.npy', ret1)
 	# np.save('test_simple_word2vec.npy', ret2)
 
-	ret1 = np.load('train_simple_word2vec.npy')
+	# ret1 = np.load('train_simple_word2vec.npy')
 	ret2 = np.load('test_simple_word2vec.npy')
 	return ret1, ret2
 
 
 # Word2Vec Weighted Avg with tfidf 
 def getWord2VecweightedAvg():
-	# vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
-	# Word2Vec_word_vectors = KeyedVectors.load_word2vec_format('../asgn2data/word2vec.bin', binary=True)
-	# ret1=np.zeros((25000, 300))
+	vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
+	Word2Vec_word_vectors = KeyedVectors.load_word2vec_format('../asgn2data/word2vec.bin', binary=True)
+	ret1=np.zeros((25000, 300))
 	# ret2=np.zeros((25000, 300))
 
-	# tfidf1, tfidf2 = getTFIDF()
+	tfidf1, tfidf2 = getTFIDF()
 	
-	# for i in range(Xtr.shape[0]):
-	# 	k=0
-	# 	temp = Xtr.getrow(i)
-	# 	temp = temp.toarray()
-	# 	t = tfidf1.getrow(i)
-	# 	t = t.toarray()
-	# 	for j in range(Xtr.shape[1]):
-	# 		if(temp[0][j]):
-	# 			if(vocab[j] in Word2Vec_word_vectors.vocab):
-	# 				ret1[i] += t[0][j]*Word2Vec_word_vectors[vocab[j]]
-	# 				k+=t[0][j]
-	# 	ret1[i] = ret1[i]/k
-	# 	print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
+	for i in range(Xtr.shape[0]):
+		k=0
+		temp = Xtr.getrow(i)
+		temp = temp.toarray()
+		t = tfidf1.getrow(i)
+		t = t.toarray()
+		for j in range(Xtr.shape[1]):
+			if(temp[0][j]):
+				if(vocab[j] in Word2Vec_word_vectors.vocab):
+					ret1[i] += t[0][j]*Word2Vec_word_vectors[vocab[j]]
+					k+=t[0][j]
+		ret1[i] = ret1[i]/k
+		print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
 
-	# print("")
-	# print('Train features prepared')
+	print("")
+	print('Train features prepared')
 	# for i in range(Xts.shape[0]):
 	# 	k=0
 	# 	temp = Xts.getrow(i)
@@ -147,35 +148,35 @@ def getWord2VecweightedAvg():
 	# 	print "  Iteration %d out of %d\r" % (i,Xts.shape[0]) ,
 	# print("")
 
-	# np.save('train_weighted_word2vec.npy', ret1)
+	np.save('train_weighted_word2vec_shuffled.npy', ret1)
 	# np.save('test_weighted_word2vec.npy', ret2)
 
-	ret1 = np.load('train_weighted_word2vec.npy')
+	# ret1 = np.load('train_weighted_word2vec.npy')
 	ret2 = np.load('test_weighted_word2vec.npy')
 	return ret1, ret2
 
 
 # Glove Avg
 def getGloveAvg():
-	# vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
-	# Glove_vectors = KeyedVectors.load_word2vec_format('../asgn2data/Glove.6B.300d.txt', binary=False)
-	# ret1=np.zeros((25000, 300))
+	vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
+	Glove_vectors = KeyedVectors.load_word2vec_format('../asgn2data/Glove.6B.300d.txt', binary=False)
+	ret1=np.zeros((25000, 300))
 	# ret2=np.zeros((25000, 300))
 	
-	# for i in range(Xtr.shape[0]):
-	# 	k=0
-	# 	temp = Xtr.getrow(i)
-	# 	temp = temp.toarray()
-	# 	for j in range(Xtr.shape[1]):
-	# 		if(temp[0][j]):
-	# 			if(vocab[j] in Glove_vectors.vocab):
-	# 				ret1[i] += Glove_vectors[vocab[j]]
-	# 				k+=1
-	# 	ret1[i] = ret1[i]/k
-	# 	print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
+	for i in range(Xtr.shape[0]):
+		k=0
+		temp = Xtr.getrow(i)
+		temp = temp.toarray()
+		for j in range(Xtr.shape[1]):
+			if(temp[0][j]):
+				if(vocab[j] in Glove_vectors.vocab):
+					ret1[i] += Glove_vectors[vocab[j]]
+					k+=1
+		ret1[i] = ret1[i]/k
+		print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
 
-	# print("")
-	# print('Train features prepared')
+	print("")
+	print('Train features prepared')
 
 	# for i in range(Xts.shape[0]):
 	# 	k=0
@@ -190,39 +191,39 @@ def getGloveAvg():
 	# 	print "  Iteration %d out of %d\r" % (i,Xts.shape[0]) ,
 	# print("")
 
-	# np.save('train_simple_glove.npy', ret1)
+	np.save('train_simple_glove_shuffled.npy', ret1)
 	# np.save('test_simple_glove.npy', ret2)
 
-	ret1 = np.load('train_simple_glove.npy')
+	# ret1 = np.load('train_simple_glove.npy')
 	ret2 = np.load('test_simple_glove.npy')
 
 	return ret1, ret2
 
 # Glove Weighted Avg with tfidf 
 def getGloveWeightedAvg():
-	# vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
-	# Glove_vectors = KeyedVectors.load_word2vec_format('../asgn2data/Glove.6B.300d.txt', binary=False)
-	# ret1=np.zeros((25000, 300))
+	vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
+	Glove_vectors = KeyedVectors.load_word2vec_format('../asgn2data/Glove.6B.300d.txt', binary=False)
+	ret1=np.zeros((25000, 300))
 	# ret2=np.zeros((25000, 300))
 	
-	# tfidf1, tfidf2 = getTFIDF()
+	tfidf1, tfidf2 = getTFIDF()
 
-	# for i in range(Xtr.shape[0]):
-	# 	k=0
-	# 	temp = Xtr.getrow(i)
-	# 	temp = temp.toarray()
-	# 	t = tfidf1.getrow(i)
-	# 	t = t.toarray()
-	# 	for j in range(Xtr.shape[1]):
-	# 		if(temp[0][j]):
-	# 			if(vocab[j] in Glove_vectors.vocab):
-	# 				ret1[i] += t[0][j]*Glove_vectors[vocab[j]]
-	# 				k+=t[0][j]
-	# 	ret1[i] = ret1[i]/k
-	# 	print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
+	for i in range(Xtr.shape[0]):
+		k=0
+		temp = Xtr.getrow(i)
+		temp = temp.toarray()
+		t = tfidf1.getrow(i)
+		t = t.toarray()
+		for j in range(Xtr.shape[1]):
+			if(temp[0][j]):
+				if(vocab[j] in Glove_vectors.vocab):
+					ret1[i] += t[0][j]*Glove_vectors[vocab[j]]
+					k+=t[0][j]
+		ret1[i] = ret1[i]/k
+		print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
 
-	# print("")
-	# print('Train features prepared')
+	print("")
+	print('Train features prepared')
 
 	# for i in range(Xts.shape[0]):
 	# 	k=0
@@ -238,12 +239,12 @@ def getGloveWeightedAvg():
 	# 	ret2[i] = ret2[i]/k
 	# 	print "  Iteration %d out of %d\r" % (i,Xts.shape[0]) ,
 
-	# np.save('train_weighted_glove.npy', ret1)
+	np.save('train_weighted_glove_shuffled.npy', ret1)
 	# np.save('test_weighted_glove.npy', ret2)
 	# print("")
 
 
-	ret1 = np.load('train_weighted_glove.npy')
+	# ret1 = np.load('train_weighted_glove.npy')
 	ret2 = np.load('test_weighted_glove.npy')
 
 	return ret1, ret2
@@ -315,12 +316,12 @@ def rnnLSTM(x, xt):
 	xt = xt.reshape(xt.shape[0],1,xt.shape[1])
 	# print(x.shape[0], x.shape[1])
 	model = Sequential()
-	model.add(LSTM(4, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
+	model.add(LSTM(3, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
 	model.add(Dense(1, activation='sigmoid'))
 	model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
 	print('Train...')
-	batch_size = 50
-	model.fit(x, y, batch_size=batch_size, epochs=15, validation_data=(xt, yt))
+	batch_size = 100
+	model.fit(x, y, batch_size=batch_size, epochs=1, validation_data=(xt, yt))
 	score, acc = model.evaluate(xt, yt, batch_size=batch_size)
 	print('Test accuracy:', acc)
 
@@ -333,6 +334,12 @@ def main():
 
 	x, xt=getGloveWeightedAvg()
 	rnnLSTM(x, xt)
+	x, xt = getGloveAvg()
+	rnnLSTM(x,xt)
+	x, xt = getWord2VecAvg()
+	rnnLSTM(x,xt)
+	x, xt = getWord2VecweightedAvg()
+	rnnLSTM(x,xt)
 
 
 if __name__ == '__main__':
