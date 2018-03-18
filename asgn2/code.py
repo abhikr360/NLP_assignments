@@ -11,7 +11,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn import svm
 from sklearn.preprocessing import normalize
 from sklearn.feature_extraction.text import TfidfTransformer
-
+from sklearn.neural_network import MLPClassifier
+from keras.preprocessing import sequence
+from keras.models import Sequential
+from keras.layers import Dense, Embedding
+from keras.layers import LSTM
 
 #### LOAD DATA #####
 
@@ -80,6 +84,8 @@ def getWord2VecAvg():
 	# 	ret1[i] = ret1[i]/k
 	# 	print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
 
+	# print("")
+	# print('Train features prepared')
 	# for i in range(Xts.shape[0]):
 	# 	k=0
 	# 	temp = Xts.getrow(i)
@@ -91,6 +97,7 @@ def getWord2VecAvg():
 	# 				k+=1
 	# 	ret2[i] = ret2[i]/k
 	# 	print "  Iteration %d out of %d\r" % (i,Xts.shape[0]) ,
+	# print("")
 
 	# np.save('train_simple_word2vec.npy', ret1)
 	# np.save('test_simple_word2vec.npy', ret2)
@@ -100,60 +107,146 @@ def getWord2VecAvg():
 	return ret1, ret2
 
 
-# # Word2Vec Weighted Avg with tfidf 
-# def getWord2VecweightedAvg(Xtr, D=25000):
-# 	vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
-# 	Word2Vec_word_vectors = KeyedVectors.load_word2vec_format('../asgn2data/word2vec.bin', binary=True)
-# 	ret=np.zeros((D, 300))
+# Word2Vec Weighted Avg with tfidf 
+def getWord2VecweightedAvg():
+	# vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
+	# Word2Vec_word_vectors = KeyedVectors.load_word2vec_format('../asgn2data/word2vec.bin', binary=True)
+	# ret1=np.zeros((25000, 300))
+	# ret2=np.zeros((25000, 300))
+
+	# tfidf1, tfidf2 = getTFIDF()
 	
-# 	tfidf = getTFIDF(Xtr)
+	# for i in range(Xtr.shape[0]):
+	# 	k=0
+	# 	temp = Xtr.getrow(i)
+	# 	temp = temp.toarray()
+	# 	t = tfidf1.getrow(i)
+	# 	t = t.toarray()
+	# 	for j in range(Xtr.shape[1]):
+	# 		if(temp[0][j]):
+	# 			if(vocab[j] in Word2Vec_word_vectors.vocab):
+	# 				ret1[i] += t[0][j]*Word2Vec_word_vectors[vocab[j]]
+	# 				k+=t[0][j]
+	# 	ret1[i] = ret1[i]/k
+	# 	print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
 
-# 	for i in range(Xtr.shape[0]):
-# 		k=0
-# 		for j in range(Xtr[i].shape[0]):
-# 			if(Xtr[i][j]):
-# 				if(vocab[j] in Word2Vec_word_vectors.vocab):
-# 					ret[i]+= tfidf[i][j]*Word2Vec_word_vectors[vocab[j]]
-# 					k+=1
-# 		ret[i]=ret[i]/k
+	# print("")
+	# print('Train features prepared')
+	# for i in range(Xts.shape[0]):
+	# 	k=0
+	# 	temp = Xts.getrow(i)
+	# 	temp = temp.toarray()
+	# 	t = tfidf2.getrow(i)
+	# 	t = t.toarray()
+	# 	for j in range(Xts.shape[1]):
+	# 		if(temp[0][j]):
+	# 			if(vocab[j] in Word2Vec_word_vectors.vocab):
+	# 				ret2[i] += t[0][j]*Word2Vec_word_vectors[vocab[j]]
+	# 				k+=t[0][j]
+	# 	ret2[i] = ret2[i]/k
+	# 	print "  Iteration %d out of %d\r" % (i,Xts.shape[0]) ,
+	# print("")
 
-# 	return ret
+	# np.save('train_weighted_word2vec.npy', ret1)
+	# np.save('test_weighted_word2vec.npy', ret2)
+
+	ret1 = np.load('train_weighted_word2vec.npy')
+	ret2 = np.load('test_weighted_word2vec.npy')
+	return ret1, ret2
 
 
-# # Glove Avg
-# def getGloveAvg(Xtr, D=25000):
-# 	vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
-# 	Glove_vectors = KeyedVectors.load_word2vec_format('../asgn2data/Glove.6B.300d.txt', binary=False)
-# 	ret=np.zeros((D, 300))
+# Glove Avg
+def getGloveAvg():
+	# vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
+	# Glove_vectors = KeyedVectors.load_word2vec_format('../asgn2data/Glove.6B.300d.txt', binary=False)
+	# ret1=np.zeros((25000, 300))
+	# ret2=np.zeros((25000, 300))
+	
+	# for i in range(Xtr.shape[0]):
+	# 	k=0
+	# 	temp = Xtr.getrow(i)
+	# 	temp = temp.toarray()
+	# 	for j in range(Xtr.shape[1]):
+	# 		if(temp[0][j]):
+	# 			if(vocab[j] in Glove_vectors.vocab):
+	# 				ret1[i] += Glove_vectors[vocab[j]]
+	# 				k+=1
+	# 	ret1[i] = ret1[i]/k
+	# 	print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
 
-# 	for i in range(Xtr.shape[0]):
-# 		k=0
-# 		for j in range(Xtr[i].shape[0]):
-# 			if(Xtr[i][j]):
-# 				if(vocab[j] in Glove_vectors.vocab):
-# 					ret[i]+= Glove_vectors[vocab[j]]
-# 					k+=1
-# 		ret[i]=ret[i]/k
+	# print("")
+	# print('Train features prepared')
 
-# 	return ret
+	# for i in range(Xts.shape[0]):
+	# 	k=0
+	# 	temp = Xts.getrow(i)
+	# 	temp = temp.toarray()
+	# 	for j in range(Xts.shape[1]):
+	# 		if(temp[0][j]):
+	# 			if(vocab[j] in Glove_vectors.vocab):
+	# 				ret2[i] += Glove_vectors[vocab[j]]
+	# 				k+=1
+	# 	ret2[i] = ret2[i]/k
+	# 	print "  Iteration %d out of %d\r" % (i,Xts.shape[0]) ,
+	# print("")
 
-# # Glove Weighted Avg with tfidf 
-# def getGloveWeightedAvg(Xtr, D=25000):
-# 	vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
-# 	Glove_vectors = KeyedVectors.load_word2vec_format('../asgn2data/Glove.6B.300d.txt', binary=False)
-# 	ret=np.zeros((D, 300))
-# 	tfidf = getTFIDF(Xtr)
+	# np.save('train_simple_glove.npy', ret1)
+	# np.save('test_simple_glove.npy', ret2)
 
-# 	for i in range(Xtr.shape[0]):
-# 		k=0
-# 		for j in range(Xtr[i].shape[0]):
-# 			if(Xtr[i][j]):
-# 				if(vocab[j] in Glove_vectors.vocab):
-# 					ret[i]+= tfidf[i][j]*Glove_vectors[vocab[j]]
-# 					k+=1
-# 		ret[i]=ret[i]/k
+	ret1 = np.load('train_simple_glove.npy')
+	ret2 = np.load('test_simple_glove.npy')
 
-# 	return ret
+	return ret1, ret2
+
+# Glove Weighted Avg with tfidf 
+def getGloveWeightedAvg():
+	# vocab = [line.rstrip('\n') for line in open('../asgn2data/aclImdb/imdb.vocab')]
+	# Glove_vectors = KeyedVectors.load_word2vec_format('../asgn2data/Glove.6B.300d.txt', binary=False)
+	# ret1=np.zeros((25000, 300))
+	# ret2=np.zeros((25000, 300))
+	
+	# tfidf1, tfidf2 = getTFIDF()
+
+	# for i in range(Xtr.shape[0]):
+	# 	k=0
+	# 	temp = Xtr.getrow(i)
+	# 	temp = temp.toarray()
+	# 	t = tfidf1.getrow(i)
+	# 	t = t.toarray()
+	# 	for j in range(Xtr.shape[1]):
+	# 		if(temp[0][j]):
+	# 			if(vocab[j] in Glove_vectors.vocab):
+	# 				ret1[i] += t[0][j]*Glove_vectors[vocab[j]]
+	# 				k+=t[0][j]
+	# 	ret1[i] = ret1[i]/k
+	# 	print "  Iteration %d out of %d\r" % (i,Xtr.shape[0]) ,
+
+	# print("")
+	# print('Train features prepared')
+
+	# for i in range(Xts.shape[0]):
+	# 	k=0
+	# 	temp = Xts.getrow(i)
+	# 	temp = temp.toarray()
+	# 	t = tfidf2.getrow(i)
+	# 	t = t.toarray()
+	# 	for j in range(Xts.shape[1]):
+	# 		if(temp[0][j]):
+	# 			if(vocab[j] in Glove_vectors.vocab):
+	# 				ret2[i] += t[0][j]*Glove_vectors[vocab[j]]
+	# 				k+=t[0][j]
+	# 	ret2[i] = ret2[i]/k
+	# 	print "  Iteration %d out of %d\r" % (i,Xts.shape[0]) ,
+
+	# np.save('train_weighted_glove.npy', ret1)
+	# np.save('test_weighted_glove.npy', ret2)
+	# print("")
+
+
+	ret1 = np.load('train_weighted_glove.npy')
+	ret2 = np.load('test_weighted_glove.npy')
+
+	return ret1, ret2
 
 
 
@@ -188,19 +281,48 @@ def multinoulliNaiveBayes(x, xt):
 # Logistic Regression
 def logisticRegression(x, xt):
 	clf = LogisticRegression()
+	y = (Ytr>5)
+	yt = (Yts>5)
+	clf.fit(x, y)
+	yp = clf.predict(xt)
+	print((sum(yp==yt)*1.0)/len(yp))
+
+# Support Vector Machine
+def supportVectorMachine(x, xt):
+	clf = svm.SVC()
 	y = 2*(Ytr>5)-1
 	yt = 2*(Yts>5)-1
 	clf.fit(x, y)
 	yp = clf.predict(xt)
 	print((sum(yp==yt)*1.0)/len(yp))
 
-# # Support Vector Machine
-# def supportVectorMachine(X,Y):
-# 	clf = svm.SVC()
-# 	return clf.fit(X,Y)
+
+# FeedForward Neural Network
+def feedForwardNeuralNetwork(x, xt):
+	clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(10,10), random_state=1)
+	y = 2*(Ytr>5)-1
+	yt = 2*(Yts>5)-1
+	clf.fit(x, y)
+	yp = clf.predict(xt)
+	print((sum(yp==yt)*1.0)/len(yp))
 
 
+def rnnLSTM(x, xt):
+	y = (Ytr>5)
+	yt = (Yts>5)
 
+	x = x.reshape(x.shape[0],1,x.shape[1])
+	xt = xt.reshape(xt.shape[0],1,xt.shape[1])
+	# print(x.shape[0], x.shape[1])
+	model = Sequential()
+	model.add(LSTM(4, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
+	model.add(Dense(1, activation='sigmoid'))
+	model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
+	print('Train...')
+	batch_size = 50
+	model.fit(x, y, batch_size=batch_size, epochs=15, validation_data=(xt, yt))
+	score, acc = model.evaluate(xt, yt, batch_size=batch_size)
+	print('Test accuracy:', acc)
 
 
 
@@ -208,10 +330,9 @@ def logisticRegression(x, xt):
 
 def main():
 
-	# Calling Bernouilli Naive Bayes
 
-	x, xt=getWord2VecAvg()
-	logisticRegression(x, xt)
+	x, xt=getGloveWeightedAvg()
+	rnnLSTM(x, xt)
 
 
 if __name__ == '__main__':
