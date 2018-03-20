@@ -21,9 +21,12 @@ from gensim.models.doc2vec import Doc2Vec
 import glob
 import random
 import nltk
+# from nltk.corpus import stopwords
 
 
 ######   Helper functions   ####
+# stop_words = set(stopwords.words('english'))
+
 def sent_normalize_text(text):
     norm_text = text.lower()
     # Replace breaks with spaces
@@ -322,7 +325,7 @@ def getDoc2Vec():
 	return x, xt, y, yt
 
 # Average of sentence vectors
-def sen2Vec(algo=5):
+def sen2VecAvg(algo=5):
 	print("Using Avg of sentence vectors")
 	model= Doc2Vec.load('my_model_sens.doc2vec')
 	postrfiles = glob.glob("../asgn2data/aclImdb/train/pos/*.txt")
@@ -330,8 +333,8 @@ def sen2Vec(algo=5):
 	postsfiles = glob.glob("../asgn2data/aclImdb/test/pos/*.txt")
 	negtsfiles = glob.glob("../asgn2data/aclImdb/test/neg/*.txt")
 
-	x = np.zeros((25000,300))
-	xt = np.zeros((25000,300))
+	x = np.zeros((25000,100))
+	xt = np.zeros((25000,100))
 	y = np.zeros(25000)
 	yt = np.zeros(25000)
 
@@ -344,7 +347,7 @@ def sen2Vec(algo=5):
 			for j in range(len(sens)):
 				x[i] += model[f+'SENT_{}'.format(j)]
 			x[i]=x[i]/len(sens)
-			y[i]=1
+			y[i]=10
 			i+=1
 
 	for f in negtrfiles:
@@ -367,7 +370,7 @@ def sen2Vec(algo=5):
 			for j in range(len(sens)):
 				xt[i] += model[f+'SENT_{}'.format(j)]
 			xt[i]=xt[i]/len(sens)
-			yt[i]=1
+			yt[i]=10
 			i+=1
 
 	for f in negtsfiles:
@@ -387,40 +390,9 @@ def sen2Vec(algo=5):
 	x[:], y[:] = zip(*combined)
 
 
-	if(algo==3):
-		clf = LogisticRegression()
-		clf.fit(x, y)
-		yp = clf.predict(xt)
-		print((sum(yp==yt)*1.0)/len(yp))
-	elif(algo==4):
-		clf = svm.LinearSVC()
-		y = 2*(y)-1
-		yt = 2*(yt)-1
-		clf.fit(x, y)
-		yp = clf.predict(xt)
-		print((sum(yp==yt)*1.0)/len(yp))
-	elif(algo==5):
-		clf = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(10,10), random_state=1)
-		y = 2*(y)-1
-		yt = 2*(yt)-1
-		clf.fit(x, y)
-		yp = clf.predict(xt)
-		print((sum(yp==yt)*1.0)/len(yp))
-	elif(algo==6):
-		x = x.reshape(x.shape[0],1,x.shape[1])
-		xt = xt.reshape(xt.shape[0],1,xt.shape[1])
-		# print(x.shape[0], x.shape[1])
-		model = Sequential()
-		model.add(LSTM(3, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
-		model.add(Dense(1, activation='sigmoid'))
-		model.compile(loss='binary_crossentropy',optimizer='adam',metrics=['accuracy'])
-		print('Train...')
-		batch_size = 100
-		model.fit(x, y, batch_size=batch_size, epochs=1, validation_data=(xt, yt))
-		score, acc = model.evaluate(xt, yt, batch_size=batch_size)
-		print('Test accuracy:', acc)
-	else:
-		"Print algo not applicable"
+	return x, xt, y, yt
+
+	
 
 
 
@@ -488,9 +460,9 @@ def rnnLSTM(x, xt, Ytr, Yts, key=1):
 	xt = xt.reshape(xt.shape[0],1,xt.shape[1])
 	model = Sequential()
 	if(key==2):# DOC2VEC
-		model.add(LSTM(128, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
+		model.add(LSTM(64, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
 	elif(key==3): # SEN2VEC
-		model.add(LSTM(128, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
+		model.add(LSTM(32, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
 	else:# Others
 		model.add(LSTM(128, dropout=0.2, recurrent_dropout=0.2, input_shape=(1,x.shape[2])))
 	model.add(Dense(1, activation='sigmoid'))
@@ -522,6 +494,10 @@ def main():
 	Xts = hstack([Xts,temp])
 	Xts = Xts.tocsr()
 	Yts = ts_data[1];
+
+
+
+	## UNCOMMENT THE PAIR YOU WANT TO USE
 
 
 	#---------------     Binary Bag of Words ----------------------------
@@ -652,22 +628,22 @@ def main():
 	# feedForwardNeuralNetwork(x, xt, y, yt)
 
 	# x, xt, y, yt = getDoc2Vec() 
-	# rnnLSTM(x, xt, y, yt)
+	# rnnLSTM(x, xt, y, yt, key=2)
 
 
 	#-------------------- Average of sentence vectors --------------
 
-	# x, xt, y, yt = getDoc2Vec()
+	# x, xt, y, yt = sen2VecAvg()
 	# logisticRegression(x, xt, y, yt)
 
-	# x, xt, y, yt = getDoc2Vec() 
+	# x, xt, y, yt = sen2VecAvg() 
 	# supportVectorMachine(x, xt, y, yt)
 
-	# x, xt, y, yt = getDoc2Vec() 
+	# x, xt, y, yt = sen2VecAvg() 
 	# feedForwardNeuralNetwork(x, xt, y, yt)
 
-	# x, xt, y, yt = getDoc2Vec() 
-	# rnnLSTM(x, xt, y, yt)
+	x, xt, y, yt = sen2VecAvg() 
+	rnnLSTM(x, xt, y, yt, key=3)
 
 
 

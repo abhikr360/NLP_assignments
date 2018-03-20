@@ -257,4 +257,4 @@ def sentence2Vec():
 
 
 # getDoc2Vec()
-sentence2Vec()	
+# sentence2Vec()	
