@@ -5,12 +5,8 @@ import nltk
 import os
 import numpy as np
 import glob
+from nltk.corpus import stopwords
 
-# s1 = TaggedDocument(words=['oh', 'do', 'your', 'research'],tags=['Sent_1'])
-# s2 = TaggedDocument(words=['I', 'am', 'not', 'hero'],tags=['Sent_2'])
-# s3 = TaggedDocument(words=['I', 'am', 'high', 'functioning','sociopath'],tags=['Sent_3'])
-
-# files = ['train-pos.txt', 'train-neg.txt', 'test-pos.txt', 'test-neg.txt']
 
 postrfiles = glob.glob("../asgn2data/aclImdb/train/pos/*.txt")
 # print(len(postrfiles))
@@ -20,93 +16,115 @@ postsfiles = glob.glob("../asgn2data/aclImdb/test/pos/*.txt")
 # print(len(postsfiles))
 negtsfiles = glob.glob("../asgn2data/aclImdb/test/neg/*.txt")
 # print(len(negtsfiles))
-
+unsupfiles = glob.glob("../asgn2data/aclImdb/train/unsup/*.txt")
+assert len(unsupfiles)>0
 # folders = [postrfiles, postsfiles, negtrfiles, negtsfiles]
 
 documents=[]
 
 sentences=[]
+stop_words = set(stopwords.words('english'))
+
 
 def normalize_text(text):
-    norm_text = text.lower()
-    # Replace breaks with spaces
-    norm_text = norm_text.replace('<br />', ' ')
-    # Pad punctuation with spaces on both sides
-    for char in ['.', '"', ',', '(', ')', '!', '?', ';', ':']:
-        norm_text = norm_text.replace(char, ' ' + char + ' ')
-    return norm_text
+	norm_text = text.lower()
+	norm_text = norm_text.replace('<br />', ' ')
+	for char in ['.', '"', ',', '(', ')', '!', '?', ';', ':']:
+		norm_text = norm_text.replace(char, ' ' + char + ' ')
+	
+	return norm_text
 
 def sent_normalize_text(text):
     norm_text = text.lower()
-    # Replace breaks with spaces
     norm_text = norm_text.replace('<br />', ' ')
-    # Pad punctuation with spaces on both sides
     for char in [ '"', ',', '(', ')', ';', ':']:
         norm_text = norm_text.replace(char, ' ' + char + ' ')
     return norm_text
 
-# print(len(postrfiles))
 def getDoc2Vec():
 	i=0
+	tempdocuments=[]
 	for file in postrfiles:
-		os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
+		# os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
 
 		with open(file, 'r') as curfile:
 			data = curfile.read().decode("utf-8")
 			data = normalize_text(data)
 			words = nltk.word_tokenize(data)
+			words = [w for w in words if not w in stop_words]
 			tags = [file]
-			documents.append(TaggedDocument(words=words,tags=tags))
+			tempdocuments.append(TaggedDocument(words=words,tags=tags))
 		print "  Iteration %d\r" % (i) ,
 		i+=1
 		
-	np.save('documents.npy', documents)
+	documents.extend(tempdocuments)
 	print(" 1 done")
-
+	tempdocuments=[]
 	i=0
 	for file in postsfiles:
-		os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
+		# os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
 		with open(file, 'r') as curfile:
 			data = curfile.read().decode("utf-8")
 			data = normalize_text(data)
 			words = nltk.word_tokenize(data)
+			words = [w for w in words if not w in stop_words]
 			tags = [file]
-			documents.append(TaggedDocument(words=words,tags=tags))
+			tempdocuments.append(TaggedDocument(words=words,tags=tags))
 		print "  Iteration %d\r" % (i) ,
 		i+=1
 		
-	np.save('documents.npy', documents)
+	documents.extend(tempdocuments)
 	print(" 2 done")
-
+	tempdocuments=[]
 	i=0
 	for file in negtrfiles:
-		os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
+		# os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
 		with open(file, 'r') as curfile:
 			data = curfile.read().decode("utf-8")
 			data = normalize_text(data)
 			words = nltk.word_tokenize(data)
+			words = [w for w in words if not w in stop_words]
 			tags = [file]
-			documents.append(TaggedDocument(words=words,tags=tags))
+			tempdocuments.append(TaggedDocument(words=words,tags=tags))
 		print "  Iteration %d\r" % (i) ,
 		i+=1
-	np.save('documents.npy', documents)
-	print("3 done")
 
+	documents.extend(tempdocuments)
+	print(" 3 done")
+	tempdocuments=[]
 	i=0
 	for file in negtsfiles:
+		# os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
+		with open(file, 'r') as curfile:
+			data = curfile.read().decode("utf-8")
+			data = normalize_text(data)
+			words = nltk.word_tokenize(data)
+			words = [w for w in words if not w in stop_words]
+			tags = [file]
+			tempdocuments.append(TaggedDocument(words=words,tags=tags))
+		print "  Iteration %d\r" % (i) ,
+		i+=1
+	
+	documents.extend(tempdocuments)
+	print(" 4 done")
+	tempdocuments=[]
+	i=0
+	for file in unsupfiles:
 		os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
 		with open(file, 'r') as curfile:
 			data = curfile.read().decode("utf-8")
 			data = normalize_text(data)
 			words = nltk.word_tokenize(data)
+			words = [w for w in words if not w in stop_words]
 			tags = [file]
-			documents.append(TaggedDocument(words=words,tags=tags))
+			tempdocuments.append(TaggedDocument(words=words,tags=tags))
 		print "  Iteration %d\r" % (i) ,
 		i+=1
-	np.save('documents.npy', documents)
-	print("4 done")
 
-	model = Doc2Vec(documents, vector_size=300, window=5, min_count=1, workers=4)
+	documents.extend(tempdocuments)
+	print(" 5 done")
+	
+	model = Doc2Vec(documents, vector_size=200, window=5, min_count=5, workers=4)
 	# model.build_vocab(documents)
 	model.train(documents, total_examples=len(documents), epochs=10)
 	# print(model['Sent_2'])
@@ -119,7 +137,6 @@ def getDoc2Vec():
 def sentence2Vec():
 	j=0
 	for file in postrfiles:
-
 		with open(file, 'r') as curfile:
 			data = curfile.read().decode("utf-8")
 			data = sent_normalize_text(data)
@@ -127,6 +144,7 @@ def sentence2Vec():
 			i=0
 			for s in sens:
 				words = nltk.word_tokenize(s)
+				words = [w for w in words if not w in stop_words]
 				tags = [file + "SENT_{}".format(i)]
 				sentences.append(TaggedDocument(words=words,tags=tags))
 				i+=1
@@ -140,8 +158,6 @@ def sentence2Vec():
 	j=0
 	tempsens=[]
 	for file in postsfiles:
-		# os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
-
 		with open(file, 'r') as curfile:
 			data = curfile.read().decode("utf-8")
 			data = sent_normalize_text(data)
@@ -149,6 +165,7 @@ def sentence2Vec():
 			i=0
 			for s in sens:
 				words = nltk.word_tokenize(s)
+				words = [w for w in words if not w in stop_words]
 				tags = [file + "SENT_{}".format(i)]
 				tempsens.append(TaggedDocument(words=words,tags=tags))
 				i+=1
@@ -171,6 +188,7 @@ def sentence2Vec():
 			i=0
 			for s in sens:
 				words = nltk.word_tokenize(s)
+				words = [w for w in words if not w in stop_words]
 				tags = [file + "SENT_{}".format(i)]
 				tempsens.append(TaggedDocument(words=words,tags=tags))
 				i+=1
@@ -193,6 +211,7 @@ def sentence2Vec():
 			i=0
 			for s in sens:
 				words = nltk.word_tokenize(s)
+				words = [w for w in words if not w in stop_words]
 				tags = [file + "SENT_{}".format(i)]
 				tempsens.append(TaggedDocument(words=words,tags=tags))
 				i+=1
@@ -202,10 +221,32 @@ def sentence2Vec():
 		
 	print(" 4 done")
 	sentences.extend(tempsens)
-	np.save('sentences.npy', documents)
 
-	n
-	model = Doc2Vec(sentences, vector_size=300, window=4, min_count=1, workers=4)
+	j=0
+	tempsens=[]
+	for file in unsupfiles:
+		# os.system("perl -pi -e 's/[^[:ascii:]]//g' {}".format(file))
+		with open(file, 'r') as curfile:
+			data = curfile.read().decode("utf-8")
+			data = sent_normalize_text(data)
+			sens = nltk.sent_tokenize(data)
+			i=0
+			for s in sens:
+				words = nltk.word_tokenize(s)
+				words = [w for w in words if not w in stop_words]
+				tags = [file + "SENT_{}".format(i)]
+				tempsens.append(TaggedDocument(words=words,tags=tags))
+				i+=1
+		j+=1
+		print "  Iteration %d\r" % (j) ,
+		
+		
+	print(" 5 done")
+	sentences.extend(tempsens)
+
+
+	np.save('sentences.npy', documents)
+	model = Doc2Vec(sentences, vector_size=100, window=4, min_count=5, workers=4)
 	# model.build_vocab(documents)
 	model.train(sentences, total_examples=len(sentences), epochs=10)
 	# print(model['Sent_2'])
@@ -214,4 +255,6 @@ def sentence2Vec():
 	# load the model back
 	model_loaded = Doc2Vec.load('my_model_sens.doc2vec')
 
+
+# getDoc2Vec()
 sentence2Vec()	
